@@ -14,7 +14,7 @@
   * password = psql
   * schema = public
 
-* Compile and run the sakila-rest-project
+* Compile and run **sakila-rest-project**
 
   * mvn clean package && mvn spring-boot:run
 
