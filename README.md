@@ -1,9 +1,9 @@
 Requirement :
 
--Java 8
--Maven 3.5
--Spring Boot 2.1.6
--PostgreSQL
+*Java 8
+*Maven 3.5
+*Spring Boot 2.1.6
+*PostgreSQL
 
 1. Download and install dvdrental database example (based on https://dev.mysql.com/doc/sakila/en/)
 http://www.postgresqltutorial.com/wp-content/uploads/2019/05/dvdrental.zip
