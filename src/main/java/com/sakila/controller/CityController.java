@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sakila.entity.City;
+import com.sakila.exception.EntityNotFoundException;
 import com.sakila.service.CityService;
 
 @RestController
@@ -26,12 +27,13 @@ public class CityController {
 
 	@GetMapping(value="/show",produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Page<City>> showAllCity(Pageable pageable){
-		Page<City> categoriesPage=service.showAllCity(pageable);
-		if(categoriesPage.isEmpty()) {
+		Page<City> citiesPage=service.showAllCity(pageable);
+		if(citiesPage.isEmpty()) {
 			LOG.info("NO CONTENT");
-			return new ResponseEntity<Page<City>>(HttpStatus.NO_CONTENT);
+			return ResponseEntity.notFound().build();
 		}
-		return new ResponseEntity<Page<City>>(categoriesPage,new HttpHeaders(),HttpStatus.OK);
+		
+		return new ResponseEntity<Page<City>>(citiesPage,new HttpHeaders(),HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/show/{city_id}",produces=MediaType.APPLICATION_JSON_VALUE)
@@ -39,7 +41,7 @@ public class CityController {
 		City city=service.showCityByCityId(city_id);
 		if(city == null) {	
 			LOG.info("NO CONTENT");
-			return new ResponseEntity<City>(HttpStatus.NOT_FOUND);
+			throw new EntityNotFoundException("ID "+city_id+" not found.");
 		}
 		return new ResponseEntity<City>(city,new HttpHeaders(),HttpStatus.OK);
 	}

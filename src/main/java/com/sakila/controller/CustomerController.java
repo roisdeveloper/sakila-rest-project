@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sakila.entity.Customer;
+import com.sakila.exception.EntityNotFoundException;
 import com.sakila.service.CustomerService;
 
 @RestController
@@ -27,12 +28,12 @@ public class CustomerController {
 	
 	@GetMapping(value="/show",produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Page<Customer>> showAllCustomer(Pageable pageable){
-		Page<Customer> categoriesPage=service.showAllCustomer(pageable);
-		if(categoriesPage.isEmpty()) {
+		Page<Customer> customerPage=service.showAllCustomer(pageable);
+		if(customerPage.isEmpty()) {
 			LOG.info("NO CONTENT");
 			return new ResponseEntity<Page<Customer>>(HttpStatus.NO_CONTENT);
 		}
-		return new ResponseEntity<Page<Customer>>(categoriesPage,new HttpHeaders(),HttpStatus.OK);
+		return new ResponseEntity<Page<Customer>>(customerPage,new HttpHeaders(),HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/show/{customer_id}",produces=MediaType.APPLICATION_JSON_VALUE)
@@ -40,7 +41,7 @@ public class CustomerController {
 		Customer customer=service.showCustomerByCustomerId(customer_id);
 		if(customer == null) {	
 			LOG.info("NO CONTENT");
-			return new ResponseEntity<Customer>(HttpStatus.NOT_FOUND);
+			throw new EntityNotFoundException("ID "+customer_id+" not found.");
 		}
 		return new ResponseEntity<Customer>(customer,new HttpHeaders(),HttpStatus.OK);
 	}

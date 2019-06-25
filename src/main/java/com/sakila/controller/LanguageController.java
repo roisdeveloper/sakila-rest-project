@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sakila.entity.Language;
+import com.sakila.exception.EntityNotFoundException;
 import com.sakila.service.LanguageService;
 
 @RestController
@@ -27,12 +28,12 @@ public class LanguageController {
 	
 	@GetMapping(value="/show",produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Page<Language>> showAllLanguage(Pageable pageable){
-		Page<Language> categoriesPage=service.showAllLanguage(pageable);
-		if(categoriesPage.isEmpty()) {
+		Page<Language> languagePage=service.showAllLanguage(pageable);
+		if(languagePage.isEmpty()) {
 			LOG.info("NO CONTENT");
 			return new ResponseEntity<Page<Language>>(HttpStatus.NO_CONTENT);
 		}
-		return new ResponseEntity<Page<Language>>(categoriesPage,new HttpHeaders(),HttpStatus.OK);
+		return new ResponseEntity<Page<Language>>(languagePage,new HttpHeaders(),HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/show/{language_id}",produces=MediaType.APPLICATION_JSON_VALUE)
@@ -40,7 +41,7 @@ public class LanguageController {
 		Language language=service.showLanguageByLanguageId(language_id);
 		if(language == null) {	
 			LOG.info("NO CONTENT");
-			return new ResponseEntity<Language>(HttpStatus.NOT_FOUND);
+			throw new EntityNotFoundException("ID "+language_id+" not found.");
 		}
 		return new ResponseEntity<Language>(language,new HttpHeaders(),HttpStatus.OK);
 	}

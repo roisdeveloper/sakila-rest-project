@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import com.sakila.entity.Payment;
+import com.sakila.exception.EntityNotFoundException;
 import com.sakila.service.PaymentService;
 
 @RestController
@@ -26,12 +27,12 @@ public class PaymentController {
 	private PaymentService service;
 	@GetMapping(value="/show",produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Page<Payment>> showAllPayment(Pageable pageable){
-		Page<Payment> categoriesPage=service.showAllPayment(pageable);
-		if(categoriesPage.isEmpty()) {
+		Page<Payment> paymentPage=service.showAllPayment(pageable);
+		if(paymentPage.isEmpty()) {
 			LOG.info("NO CONTENT");
 			return new ResponseEntity<Page<Payment>>(HttpStatus.NO_CONTENT);
 		}
-		return new ResponseEntity<Page<Payment>>(categoriesPage,new HttpHeaders(),HttpStatus.OK);
+		return new ResponseEntity<Page<Payment>>(paymentPage,new HttpHeaders(),HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/show/{payment_id}",produces=MediaType.APPLICATION_JSON_VALUE)
@@ -39,7 +40,7 @@ public class PaymentController {
 		Payment payment=service.showPaymentByPaymentId(payment_id);
 		if(payment == null) {	
 			LOG.info("NO CONTENT");
-			return new ResponseEntity<Payment>(HttpStatus.NOT_FOUND);
+			throw new EntityNotFoundException("ID "+payment_id+" not found.");
 		}
 		return new ResponseEntity<Payment>(payment,new HttpHeaders(),HttpStatus.OK);
 	}

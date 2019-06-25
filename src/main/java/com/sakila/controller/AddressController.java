@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.sakila.entity.Address;
+import com.sakila.exception.EntityNotFoundException;
 import com.sakila.service.AddressService;
 
 
@@ -28,12 +29,12 @@ public class AddressController {
 
 	@GetMapping(value="/show",produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Page<Address>> showAllAddress(Pageable pageable){
-		Page<Address> categoriesPage=service.showAllAddress(pageable);
-		if(categoriesPage.isEmpty()) {
+		Page<Address> addressPage=service.showAllAddress(pageable);
+		if(addressPage.isEmpty()) {
 			LOG.info("NO CONTENT");
 			return new ResponseEntity<Page<Address>>(HttpStatus.NO_CONTENT);
 		}
-		return new ResponseEntity<Page<Address>>(categoriesPage,new HttpHeaders(),HttpStatus.OK);
+		return new ResponseEntity<Page<Address>>(addressPage,new HttpHeaders(),HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/show/{address_id}",produces=MediaType.APPLICATION_JSON_VALUE)
@@ -41,7 +42,7 @@ public class AddressController {
 		Address address=service.showAddressByAddressId(address_id);
 		if(address == null) {	
 			LOG.info("NO CONTENT");
-			return new ResponseEntity<Address>(HttpStatus.NOT_FOUND);
+			throw new EntityNotFoundException("ID "+address_id+" not found.");
 		}
 		return new ResponseEntity<Address>(address,new HttpHeaders(),HttpStatus.OK);
 	}

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sakila.entity.Country;
+import com.sakila.exception.EntityNotFoundException;
 import com.sakila.service.CountryService;
 
 @RestController
@@ -27,12 +28,12 @@ public class CountryController {
 	
 	@GetMapping(value="/show",produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Page<Country>> showAllCountry(Pageable pageable){
-		Page<Country> categoriesPage=service.showAllCountry(pageable);
-		if(categoriesPage.isEmpty()) {
+		Page<Country> countryPages=service.showAllCountry(pageable);
+		if(countryPages.isEmpty()) {
 			LOG.info("NO CONTENT");
 			return new ResponseEntity<Page<Country>>(HttpStatus.NO_CONTENT);
 		}
-		return new ResponseEntity<Page<Country>>(categoriesPage,new HttpHeaders(),HttpStatus.OK);
+		return new ResponseEntity<Page<Country>>(countryPages,new HttpHeaders(),HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/show/{country_id}",produces=MediaType.APPLICATION_JSON_VALUE)
@@ -40,7 +41,7 @@ public class CountryController {
 		Country country=service.showCountryByCountryId(country_id);
 		if(country == null) {	
 			LOG.info("NO CONTENT");
-			return new ResponseEntity<Country>(HttpStatus.NOT_FOUND);
+			throw new EntityNotFoundException("ID "+country_id+" not found.");
 		}
 		return new ResponseEntity<Country>(country,new HttpHeaders(),HttpStatus.OK);
 	}

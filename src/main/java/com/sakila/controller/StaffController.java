@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sakila.entity.Staff;
+import com.sakila.exception.EntityNotFoundException;
 import com.sakila.service.StaffService;
 
 @RestController
@@ -27,12 +28,12 @@ public class StaffController {
 	
 	@GetMapping(value="/show",produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Page<Staff>> showAllStaff(Pageable pageable){
-		Page<Staff> StaffPage=service.showAllStaff(pageable);
-		if(StaffPage.isEmpty()) {
+		Page<Staff> staffPage=service.showAllStaff(pageable);
+		if(staffPage.isEmpty()) {
 			LOG.info("NO CONTENT");
 			return new ResponseEntity<Page<Staff>>(HttpStatus.NO_CONTENT);
 		}
-		return new ResponseEntity<Page<Staff>>(StaffPage,new HttpHeaders(),HttpStatus.OK);
+		return new ResponseEntity<Page<Staff>>(staffPage,new HttpHeaders(),HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/show/{staff_id}",produces=MediaType.APPLICATION_JSON_VALUE)
@@ -40,7 +41,7 @@ public class StaffController {
 		Staff staff=service.showStaffByStaffId(staff_id);
 		if(staff == null) {	
 			LOG.info("NO CONTENT");
-			return new ResponseEntity<Staff>(HttpStatus.NOT_FOUND);
+			throw new EntityNotFoundException("ID "+staff_id+" not found.");
 		}
 		return new ResponseEntity<Staff>(staff,new HttpHeaders(),HttpStatus.OK);
 	}

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sakila.entity.Rental;
+import com.sakila.exception.EntityNotFoundException;
 import com.sakila.service.RentalService;
 
 @RestController
@@ -26,12 +27,12 @@ public class RentalController {
 	
 	@GetMapping(value="/show",produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Page<Rental>> showAllRental(Pageable pageable){
-		Page<Rental> categoriesPage=service.showAllRental(pageable);
-		if(categoriesPage.isEmpty()) {
+		Page<Rental> rentalPage=service.showAllRental(pageable);
+		if(rentalPage.isEmpty()) {
 			LOG.info("NO CONTENT");
 			return new ResponseEntity<Page<Rental>>(HttpStatus.NO_CONTENT);
 		}
-		return new ResponseEntity<Page<Rental>>(categoriesPage,new HttpHeaders(),HttpStatus.OK);
+		return new ResponseEntity<Page<Rental>>(rentalPage,new HttpHeaders(),HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/show/{rental_id}",produces=MediaType.APPLICATION_JSON_VALUE)
@@ -39,7 +40,7 @@ public class RentalController {
 		Rental rental=service.showRentalByRentalId(rental_id);
 		if(rental == null) {	
 			LOG.info("NO CONTENT");
-			return new ResponseEntity<Rental>(HttpStatus.NOT_FOUND);
+			throw new EntityNotFoundException("ID "+rental_id+" not found.");
 		}
 		return new ResponseEntity<Rental>(rental,new HttpHeaders(),HttpStatus.OK);
 	}

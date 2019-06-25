@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.sakila.entity.Category;
+import com.sakila.exception.EntityNotFoundException;
 import com.sakila.service.CategoryServiceImpl;
 
 @RestController
@@ -45,7 +46,7 @@ public class CategoryController {
 		Category category=service.showCategoryByCategoryId(category_id);
 		if(category == null) {	
 			LOG.info("NO CONTENT");
-			return new ResponseEntity<Category>(HttpStatus.NOT_FOUND);
+			throw new EntityNotFoundException("ID "+category_id+" not found.");
 		}
 		return new ResponseEntity<Category>(category,new HttpHeaders(),HttpStatus.OK);
 	}

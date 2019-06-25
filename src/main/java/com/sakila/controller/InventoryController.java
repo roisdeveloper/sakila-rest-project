@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sakila.entity.Inventory;
+import com.sakila.exception.EntityNotFoundException;
 import com.sakila.service.InventoryService;
 
 @RestController
@@ -40,7 +41,7 @@ public class InventoryController {
 		Inventory inventory=service.showInventoryByInventoryId(inventory_id);
 		if(inventory == null) {	
 			LOG.info("NO CONTENT");
-			return new ResponseEntity<Inventory>(HttpStatus.NOT_FOUND);
+			throw new EntityNotFoundException("ID "+inventory_id+" not found.");
 		}
 		return new ResponseEntity<Inventory>(inventory,new HttpHeaders(),HttpStatus.OK);
 	}

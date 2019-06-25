@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sakila.entity.Film;
+import com.sakila.exception.EntityNotFoundException;
 import com.sakila.service.FilmService;
 
 @RestController
@@ -26,12 +27,12 @@ public class FilmController {
 	
 	@GetMapping(value="/show",produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Page<Film>> showAllFilm(Pageable pageable){
-		Page<Film> categoriesPage=service.showAllFilm(pageable);
-		if(categoriesPage.isEmpty()) {
+		Page<Film> filmPage=service.showAllFilm(pageable);
+		if(filmPage.isEmpty()) {
 			LOG.info("NO CONTENT");
 			return new ResponseEntity<Page<Film>>(HttpStatus.NO_CONTENT);
 		}
-		return new ResponseEntity<Page<Film>>(categoriesPage,new HttpHeaders(),HttpStatus.OK);
+		return new ResponseEntity<Page<Film>>(filmPage,new HttpHeaders(),HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/show/{film_id}",produces=MediaType.APPLICATION_JSON_VALUE)
@@ -39,7 +40,7 @@ public class FilmController {
 		Film film=service.showFilmByFilmId(film_id);
 		if(film == null) {	
 			LOG.info("NO CONTENT");
-			return new ResponseEntity<Film>(HttpStatus.NOT_FOUND);
+			throw new EntityNotFoundException("ID "+film_id+" not found.");
 		}
 		return new ResponseEntity<Film>(film,new HttpHeaders(),HttpStatus.OK);
 	}

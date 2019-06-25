@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sakila.entity.Actor;
+import com.sakila.exception.EntityNotFoundException;
 import com.sakila.service.ActorService;
 
 @RestController
@@ -39,7 +40,8 @@ public class ActorController {
 		Actor actor=service.showActorByActorId(actor_id);
 		if(actor == null) {	
 			LOG.info("NO CONTENT");
-			return new ResponseEntity<Actor>(HttpStatus.NOT_FOUND);
+			throw new EntityNotFoundException("ID "+actor_id+" not found.");
+			
 		}
 		return new ResponseEntity<Actor>(actor,new HttpHeaders(),HttpStatus.OK);
 	}

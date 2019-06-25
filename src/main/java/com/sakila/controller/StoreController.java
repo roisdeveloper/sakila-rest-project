@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sakila.entity.Store;
+import com.sakila.exception.EntityNotFoundException;
 import com.sakila.service.StoreService;
 
 @RestController
@@ -27,12 +28,12 @@ public class StoreController {
 	
 	@GetMapping(value="/show",produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Page<Store>> showAllStore(Pageable pageable){
-		Page<Store> StorePage=service.showAllStore(pageable);
-		if(StorePage.isEmpty()) {
+		Page<Store> storePage=service.showAllStore(pageable);
+		if(storePage.isEmpty()) {
 			LOG.info("NO CONTENT");
 			return new ResponseEntity<Page<Store>>(HttpStatus.NO_CONTENT);
 		}
-		return new ResponseEntity<Page<Store>>(StorePage,new HttpHeaders(),HttpStatus.OK);
+		return new ResponseEntity<Page<Store>>(storePage,new HttpHeaders(),HttpStatus.OK);
 	}
 	
 	@GetMapping(value="/show/{store_id}",produces=MediaType.APPLICATION_JSON_VALUE)
@@ -40,7 +41,7 @@ public class StoreController {
 		Store store=service.showStoreByStoreId(store_id);
 		if(store == null) {	
 			LOG.info("NO CONTENT");
-			return new ResponseEntity<Store>(HttpStatus.NOT_FOUND);
+			throw new EntityNotFoundException("ID "+store_id+" not found.");
 		}
 		return new ResponseEntity<Store>(store,new HttpHeaders(),HttpStatus.OK);
 	}
